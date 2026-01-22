@@ -1,0 +1,17 @@
+name: Send Daily Stock Emails
+
+on:
+  schedule:
+    # Täglich um 18:00 UTC (19:00 MEZ / 20:00 MESZ)
+    - cron: '0 18 * * *'
+  workflow_dispatch: # Manueller Trigger
+
+jobs:
+  send-emails:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Cron Job
+        run: |
+          curl -X GET \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            https://your-domain.com/api/cron/send-daily-stocks
