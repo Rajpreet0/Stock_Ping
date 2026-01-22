@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendMail } from "@/lib/mail/nodemailer";
+import { addEmail, emailExists } from "@/lib/google-sheets/sheets";
 
 export async function POST(request: NextRequest) {
     try {
@@ -9,6 +10,29 @@ export async function POST(request: NextRequest) {
             return NextResponse.json(
                 { error: "Valid email is required" },
                 { status: 400 }
+            );
+        }
+
+        // Check if email already exists in Google Sheets
+        const exists = await emailExists(email);
+        if (exists) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: "Email already subscribed",
+                    alreadySubscribed: true,
+                    email: email
+                },
+                { status: 409 }
+            );
+        }
+
+        // Add email to Google Sheets
+        const addedToSheet = await addEmail(email);
+        if (!addedToSheet) {
+            return NextResponse.json(
+                { success: false, error: "Failed to add email to database" },
+                { status: 500 }
             );
         }
 
