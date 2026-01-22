@@ -10,6 +10,17 @@ jobs:
   send-emails:
     runs-on: ubuntu-latest
     steps:
+      - name: Check if secret is set
+        run: |
+          if [ -z "${{ secrets.CRON_SECRET }}" ]; then
+            echo "ERROR: CRON_SECRET is not set or is empty"
+            exit 1
+          else
+            echo "CRON_SECRET is set (length: ${#CRON_SECRET})"
+          fi
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+
       - name: Trigger Cron Job
         run: |
           curl -X GET \
