@@ -14,4 +14,4 @@ jobs:
         run: |
           curl -X GET \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
-            https://your-domain.com/api/cron/send-daily-stocks
+            http://localhost:3000/api/cron/send-daily-stocks
