@@ -39,6 +39,11 @@ const SubscriptionForm = () => {
             if (data.success) {
                 localStorage.setItem("user_email", subscriptionEmail);
                 setIsUserSubscribed(true);
+            } else if (data.alreadySubscribed) {
+                // Email already exists in Google Sheets, save to localStorage
+                localStorage.setItem("user_email", data.email);
+                setIsUserSubscribed(true);
+                setError(""); // Clear any previous errors
             } else {
                 setError(data.error || "Failed to send subscription email");
             }
