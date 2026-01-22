@@ -1,8 +1,24 @@
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Building2, TrendingUp } from "lucide-react"
+import { Building2, TrendingDown, TrendingUp } from "lucide-react"
 
-const StockListItem = () => {
+interface Stock {
+    symbol: string;
+    price: number;
+    name: string;
+    change: number;
+    changesPercentage: number;
+    exchange: string;
+}
+
+interface StockListItemProps {
+    stock: Stock;
+    rank: number;
+}
+
+const StockListItem = ({ stock, rank }: StockListItemProps) => {
+    const isPositive = stock.changesPercentage >= 0;
+
   return (
     <Card className="hover:shadow-lg transition-shadow">
         <CardHeader>
@@ -10,40 +26,47 @@ const StockListItem = () => {
                 {/* Title */}
                 <div>
                     <CardTitle className="text-2xl font-bold mb-1">
-                        Broadcom Inc
+                        {stock.name}
                     </CardTitle>
                     <a
+                        href={`https://finance.yahoo.com/quote/${stock.symbol}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="hover:underline cursor-pointer">
                         <p className="text-sm text-primary hover:text-primary/80 transition-colors font-medium">
-                            AVGO
+                            {stock.symbol}
                         </p>
                     </a>
                 </div>
                 {/* Badge */}
                 <Badge variant="secondary" className="text-lg">
-                    #1
+                    #{rank}
                 </Badge>
-            </div> 
+            </div>
         </CardHeader>
         <CardContent>
             <div className="space-y-3">
                 {/* Price */}
                 <div>
-                    <p className="text-3xl font-bold">$351.71</p>
+                    <p className="text-3xl font-bold">${stock.price.toFixed(2)}</p>
                 </div>
 
                 {/* Change */}
-                <div className="flex items-center gap-2 text-green-600">
-                    <TrendingUp className="w-5 h-5"/>
+                <div className={`flex items-center gap-2 ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+                    {isPositive ? (
+                        <TrendingUp className="w-5 h-5"/>
+                    ) : (
+                        <TrendingDown className="w-5 h-5"/>
+                    )}
                     <span className="text-lg font-semibold">
-                        2.53% (8.69)
+                        {isPositive ? '+' : ''}{stock.changesPercentage.toFixed(2)}% ({isPositive ? '+' : ''}{stock.change.toFixed(2)})
                     </span>
                 </div>
 
-                {/* Sector */}
+                {/* Exchange */}
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Building2 className="w-4 h-4"/>
-                    <span>Semiconductors</span>
+                    <span>{stock.exchange}</span>
                 </div>
             </div>
         </CardContent>
