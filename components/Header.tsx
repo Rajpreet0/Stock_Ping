@@ -12,7 +12,7 @@ const Header = () => {
         />
         <div className="p-4 w-full flex items-center justify-center">
             <p className="text-muted-foreground">
-                Top performing stocks, delivered daily
+                Top performing stocks from the US, delivered daily
             </p>
         </div>
     </header>
