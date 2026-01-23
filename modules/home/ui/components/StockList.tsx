@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { RefreshCw } from "lucide-react"
 import StockListItem from "./StockListItem"
 
 interface Stock {
@@ -17,15 +18,29 @@ const StockList = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [lastUpdated, setLastUpdated] = useState("");
+    const [isRefreshing, setIsRefreshing] = useState(false);
 
     useEffect(() => {
         fetchStocks();
     }, []);
 
-    const fetchStocks = async () => {
+    const fetchStocks = async (isManualRefresh = false) => {
         try {
-            setLoading(true);
-            const response = await fetch("/api/stocks");
+            if (isManualRefresh) {
+                setIsRefreshing(true);
+            } else {
+                setLoading(true);
+            }
+            setError("");
+
+            // Add cache busting for manual refresh
+            const url = isManualRefresh
+                ? `/api/stocks?t=${Date.now()}`
+                : "/api/stocks";
+
+            const response = await fetch(url, {
+                cache: 'no-store'
+            });
             const data = await response.json();
 
             if (data.success) {
@@ -39,16 +54,34 @@ const StockList = () => {
             setError("Fehler beim Laden der Aktien");
         } finally {
             setLoading(false);
+            setIsRefreshing(false);
         }
+    };
+
+    const handleRefresh = () => {
+        fetchStocks(true);
     };
 
   return (
     <div className="mt-24">
         <div className="w-full flex items-center justify-between">
             <h2 className="text-2xl font-bold">Top Performer - Alle Märkte</h2>
-            <p className="text-xs">
-                {loading ? "Lädt..." : `Aktualisiert: ${lastUpdated}`}
-            </p>
+            <div className="flex items-center gap-3">
+                <p className="text-xs">
+                    {loading ? "Lädt..." : `Aktualisiert: ${lastUpdated}`}
+                </p>
+                <button
+                    onClick={handleRefresh}
+                    disabled={loading || isRefreshing}
+                    className="flex items-center gap-1 px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 rounded cursor-pointer hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    title="Aktualisieren"
+                >
+                    <RefreshCw
+                        className={`w-3 h-3 ${isRefreshing ? 'animate-spin' : ''}`}
+                    />
+                    {isRefreshing ? 'Lädt...' : 'Aktualisieren'}
+                </button>
+            </div>
         </div>
 
         <hr className="mb-2 mt-2"/>
