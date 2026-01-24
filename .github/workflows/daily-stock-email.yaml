@@ -6,6 +6,9 @@ on:
     - cron: '0 18 * * *'
   workflow_dispatch: # Manueller Trigger
 
+permissions:
+  contents: read
+
 jobs:
   send-emails:
     runs-on: ubuntu-latest
