@@ -1,6 +1,10 @@
+"use client"
+
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Switch } from "@/components/ui/switch";
 import { Building2, TrendingDown, TrendingUp } from "lucide-react"
+import { useWatchlist } from "@/hooks/useWatchlist"
 
 interface Stock {
     symbol: string;
@@ -18,6 +22,18 @@ interface StockListItemProps {
 
 const StockListItem = ({ stock, rank }: StockListItemProps) => {
     const isPositive = stock.changesPercentage >= 0;
+    const { isInWatchlist, toggleWatchlist, userEmail } = useWatchlist();
+
+    const inWatchlist = isInWatchlist(stock.symbol);
+
+    const handleToggle = () => {
+        if (!userEmail) return;
+        toggleWatchlist({
+            symbol: stock.symbol,
+            name: stock.name,
+            price: stock.price,
+        });
+    };
 
   return (
     <Card className="hover:shadow-lg transition-shadow">
@@ -70,6 +86,25 @@ const StockListItem = ({ stock, rank }: StockListItemProps) => {
                 </div>
             </div>
         </CardContent>
+        <CardFooter>
+            {/* Watchlist */}
+            <div className="flex items-center gap-4">
+                <Switch
+                    size="sm"
+                    className="cursor-pointer"
+                    checked={inWatchlist}
+                    onCheckedChange={handleToggle}
+                    disabled={!userEmail}
+                />
+                <p className="text-sm">
+                    {!userEmail
+                        ? "Melde dich an für Watchlist"
+                        : inWatchlist
+                            ? "In Watchlist"
+                            : "Zur Watchlist"}
+                </p>
+            </div>
+        </CardFooter>
     </Card>
   )
 }
