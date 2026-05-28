@@ -65,7 +65,13 @@ export async function GET(request: NextRequest) {
             change: stock.change,
             changesPercentage: stock.changesPercentage,
         }));
-        await saveStockSnapshot(snapshots);
+        let snapshotsSaved = 0;
+        try {
+            await saveStockSnapshot(snapshots);
+            snapshotsSaved = snapshots.length;
+        } catch (snapshotError) {
+            console.error("Failed to save stock snapshots to StockHistory sheet:", snapshotError);
+        }
 
         // Generate email HTML
         const emailHtml = generateStockEmailTemplate(positiveStocks);
@@ -112,7 +118,7 @@ export async function GET(request: NextRequest) {
                 successful: successCount,
                 failed: failedCount,
                 positiveStocks: positiveStocks.length,
-                snapshotsSaved: snapshots.length,
+                snapshotsSaved,
             },
             timestamp: new Date().toISOString(),
         });
