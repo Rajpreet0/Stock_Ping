@@ -31,3 +31,13 @@ export interface Stock {
     changesPercentage: number;
     exchange: string;
 }
+
+export interface StockSnapshot {
+    date: string;
+    symbol: string;
+    name: string;
+    price: number;
+    change: number;
+    changesPercentage: number;
+    volume?: number;
+}
