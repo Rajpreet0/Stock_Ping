@@ -78,7 +78,7 @@ export async function getMostActiveStocks(): Promise<Stock[]> {
  * 
  * This Function has the Logic of retriving Company Information
  * 
- * @param {string} symbol - Tickersymbol of the Company listed in NASDAQ
+ * @param {string} symbol - Tickersymbol of the Company listed in the NASDAQ
  * @returns {Promise<CompanyInformation>} - Retrieved Company Information
  */
 export async function getCompanyInformation(symbol: string): Promise<CompanyInformation> {
