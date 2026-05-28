@@ -1,12 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { saveStockSnapshot } from "@/lib/google-sheets/sheets";
 
-export async function GET(request: NextRequest) {
-    const secretFromQuery = request.nextUrl.searchParams.get("secret");
-    if (secretFromQuery !== process.env.CRON_SECRET) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
+export async function GET() {
     try {
         await saveStockSnapshot([{
             date: new Date().toISOString().split("T")[0],
