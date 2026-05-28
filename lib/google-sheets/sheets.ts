@@ -1,4 +1,5 @@
 import { google } from "googleapis";
+import { StockSnapshot } from "@/types";
 
 // Initialize Google Sheets API
 const auth = new google.auth.GoogleAuth({
@@ -171,6 +172,40 @@ export async function addToWatchlist(email: string, item: WatchlistItem): Promis
         console.error("Error adding to watchlist:", error);
         throw error;
     }
+}
+
+// ==================== STOCK HISTORY FUNCTIONS ====================
+// Sheet structure: Date | Symbol | Name | Price | Change | Change%
+
+/**
+ * Save a daily snapshot of top stocks to the StockHistory sheet.
+ * Each row = one stock on one day. Call this once per day after market close.
+ */
+export async function saveStockSnapshot(snapshots: StockSnapshot[]): Promise<void> {
+    if (!SPREADSHEET_ID) {
+        throw new Error("SPREADSHEET_ID is not defined in environment variables");
+    }
+
+    if (snapshots.length === 0) return;
+
+    const rows = snapshots.map(s => [
+        s.date,
+        s.symbol,
+        s.name,
+        s.price,
+        s.change,
+        s.changesPercentage,
+        s.volume ?? "",
+    ]);
+
+    await sheets.spreadsheets.values.append({
+        spreadsheetId: SPREADSHEET_ID,
+        range: "StockHistory!A:G",
+        valueInputOption: "RAW",
+        requestBody: { values: rows },
+    });
+
+    console.log(`Saved ${snapshots.length} stock snapshots for ${snapshots[0].date}`);
 }
 
 /**

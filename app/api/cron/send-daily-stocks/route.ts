@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { sendMail } from "@/lib/mail/nodemailer";
 import { getMostActiveStocks } from "@/lib/stocks/stock-api";
 import { generateStockEmailTemplate } from "@/lib/mail/stock-email-template";
-import { getAllEmails } from "@/lib/google-sheets/sheets";
+import { getAllEmails, saveStockSnapshot } from "@/lib/google-sheets/sheets";
+import { StockSnapshot } from "@/types";
 
 /**
  * Cron Job API Endpoint
@@ -54,6 +55,18 @@ export async function GET(request: NextRequest) {
         const positiveStocks = stocks.filter(stock => stock.changesPercentage > 0);
         console.log(`Found ${positiveStocks.length} positive stocks`);
 
+        // Save daily snapshot of all active stocks to StockHistory sheet
+        const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+        const snapshots: StockSnapshot[] = stocks.map(stock => ({
+            date: today,
+            symbol: stock.symbol,
+            name: stock.name,
+            price: stock.price,
+            change: stock.change,
+            changesPercentage: stock.changesPercentage,
+        }));
+        await saveStockSnapshot(snapshots);
+
         // Generate email HTML
         const emailHtml = generateStockEmailTemplate(positiveStocks);
 
@@ -99,6 +112,7 @@ export async function GET(request: NextRequest) {
                 successful: successCount,
                 failed: failedCount,
                 positiveStocks: positiveStocks.length,
+                snapshotsSaved: snapshots.length,
             },
             timestamp: new Date().toISOString(),
         });
