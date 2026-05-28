@@ -1,7 +1,13 @@
 import { getCompanyInformation } from "@/lib/stocks/stock-api";
 import { NextRequest, NextResponse } from "next/server";
 
-
+/**
+ * 
+ * This API GET request will retrieve detail Company Information based
+ * on the Ticker Symbol
+ * 
+ * @returns {Promise<CompanyInformation>} - Detail Information about a specific Company
+ */
 export async function GET(request: NextRequest) {
     try {
         const symbol = request.nextUrl.searchParams.get("symbol");

@@ -74,13 +74,22 @@ export async function getMostActiveStocks(): Promise<Stock[]> {
     }
 }
 
+/**
+ * 
+ * This Function has the Logic of retriving Company Information
+ * 
+ * @param {string} symbol - Tickersymbol of the Company listed in the NASDAQ
+ * @returns {Promise<CompanyInformation>} - Retrieved Company Information
+ */
 export async function getCompanyInformation(symbol: string): Promise<CompanyInformation> {
     try {
         
+        // Check if API Key is set or not
         if (!API_KEY) {
             throw new Error("STOCK_API_KEY is not defined in env. variables");
         }
 
+        // Specific API Url to retrieve Company Data which is cached for six hours
         const url = `${STOCK_API_BASE_URL}/profile?symbol=${symbol}&apikey=${API_KEY}`;
         const cacheTime = 21600 // 6 hour
 
@@ -93,6 +102,7 @@ export async function getCompanyInformation(symbol: string): Promise<CompanyInfo
             throw new Error(`Stock API returned ${response.status}: ${response.statusText}`);
         }
 
+        // Company Data
         const data: CompanyInformation[] = await response.json();
 
         return data[0];
