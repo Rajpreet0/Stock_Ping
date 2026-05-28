@@ -5,7 +5,15 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Switch } from "@/components/ui/switch";
 import { Building2, TrendingDown, TrendingUp } from "lucide-react"
 import { useWatchlist } from "@/hooks/useWatchlist"
-import { Stock } from "@/types";
+
+interface Stock {
+    symbol: string;
+    price: number;
+    name: string;
+    change: number;
+    changesPercentage: number;
+    exchange: string;
+}
 
 interface StockListItemProps {
     stock: Stock;

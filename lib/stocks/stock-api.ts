@@ -1,4 +1,11 @@
-import { CompanyInformation, Stock } from "@/types";
+export interface Stock {
+    symbol: string;
+    price: number;
+    name: string;
+    change: number;
+    changesPercentage: number;
+    exchange: string;
+}
 
 const STOCK_API_BASE_URL = "https://financialmodelingprep.com/stable";
 const API_KEY = process.env.STOCK_API_KEY;
@@ -70,34 +77,6 @@ export async function getMostActiveStocks(): Promise<Stock[]> {
         return sorted;
     } catch (error) {
         console.error("Error fetching stocks from API:", error);
-        throw error;
-    }
-}
-
-export async function getCompanyInformation(symbol: string): Promise<CompanyInformation> {
-    try {
-        
-        if (!API_KEY) {
-            throw new Error("STOCK_API_KEY is not defined in env. variables");
-        }
-
-        const url = `${STOCK_API_BASE_URL}/profile?symbol=${symbol}&apikey=${API_KEY}`;
-        const cacheTime = 21600 // 6 hour
-
-        const response = await fetch(url, {
-            next: { revalidate: cacheTime },
-            cache: "no-store"
-        });
-
-        if (!response.ok) {
-            throw new Error(`Stock API returned ${response.status}: ${response.statusText}`);
-        }
-
-        const data: CompanyInformation[] = await response.json();
-
-        return data[0];
-    } catch (error) {
-        console.error("Error fetching company information from API:", error);
         throw error;
     }
 }

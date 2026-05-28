@@ -3,8 +3,15 @@
 import { useEffect, useState } from "react"
 import { RefreshCw } from "lucide-react"
 import StockListItem from "./StockListItem"
-import { Stock } from "@/types"
 
+interface Stock {
+    symbol: string;
+    price: number;
+    name: string;
+    change: number;
+    changesPercentage: number;
+    exchange: string;
+}
 
 const StockList = () => {
     const [stocks, setStocks] = useState<Stock[]>([]);

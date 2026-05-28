@@ -1,4 +1,4 @@
-import { Stock } from "@/types";
+import { Stock } from "@/lib/stocks/stock-api";
 
 export function generateStockEmailTemplate(stocks: Stock[]): string {
     const positiveStocks = stocks.filter(stock => stock.changesPercentage > 0);
